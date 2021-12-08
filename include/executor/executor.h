@@ -221,11 +221,10 @@ private:
   /// \name Helper Functions for block controls.
   /// @{
   /// Helper function for calling functions. Return the continuation iterator.
-  Expect<AST::InstrView::iterator>
-  enterFunction(Runtime::StoreManager &StoreMgr,
-                Runtime::StackManager &StackMgr,
-                const Runtime::Instance::FunctionInstance &Func,
-                const AST::InstrView::iterator From);
+  Expect<AST::InstrView::iterator> enterFunction(
+      Runtime::StoreManager &StoreMgr, Runtime::StackManager &StackMgr,
+      const Runtime::Instance::FunctionInstance &Func,
+      const AST::InstrView::iterator From, const bool IsTailCall = false);
 
   /// Helper function for branching to label.
   Expect<void> branchToLabel(Runtime::StoreManager &StoreMgr,
@@ -298,11 +297,13 @@ private:
   Expect<void> runCallOp(Runtime::StoreManager &StoreMgr,
                          Runtime::StackManager &StackMgr,
                          const AST::Instruction &Instr,
-                         AST::InstrView::iterator &PC);
+                         AST::InstrView::iterator &PC,
+                         const bool IsTailCall = false);
   Expect<void> runCallIndirectOp(Runtime::StoreManager &StoreMgr,
                                  Runtime::StackManager &StackMgr,
                                  const AST::Instruction &Instr,
-                                 AST::InstrView::iterator &PC);
+                                 AST::InstrView::iterator &PC,
+                                 const bool IsTailCall = false);
   /// ======= Variable instructions =======
   Expect<void> runLocalGetOp(Runtime::StackManager &StackMgr,
                              const uint32_t Idx);
