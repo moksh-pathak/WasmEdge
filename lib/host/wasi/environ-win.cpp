@@ -4,6 +4,8 @@
 #include "common/defines.h"
 #if WASMEDGE_OS_WINDOWS
 
+#include <windows.h>
+
 #include "common/errcode.h"
 #include "host/wasi/environ.h"
 #include "win.h"
@@ -38,31 +40,29 @@ WasiExpect<void> Environ::procRaise(__wasi_signal_t Signal) const noexcept {
     SysSignal = SIGTERM;
     break;
   case __WASI_SIGNAL_HUP:
+    // NA
   case __WASI_SIGNAL_QUIT:
+    SysSignal = WM_CHAR;
+    break;
   case __WASI_SIGNAL_TRAP:
+    // NA
   case __WASI_SIGNAL_BUS:
+    // NA
   case __WASI_SIGNAL_KILL:
+    SysSignal = WM_QUIT;
+    break;
   case __WASI_SIGNAL_USR1:
+    SysSignal = SendMessage-WM_APP;
+    break;
   case __WASI_SIGNAL_USR2:
+    SysSignal = SendMessage-WM_APP;
+    break;
   case __WASI_SIGNAL_PIPE:
+    SysSignal = WaitForSingleObject;
+    break;
   case __WASI_SIGNAL_ALRM:
-  case __WASI_SIGNAL_CHLD:
-  case __WASI_SIGNAL_CONT:
-  case __WASI_SIGNAL_STOP:
-  case __WASI_SIGNAL_TSTP:
-  case __WASI_SIGNAL_TTIN:
-  case __WASI_SIGNAL_TTOU:
-  case __WASI_SIGNAL_URG:
-  case __WASI_SIGNAL_XCPU:
-  case __WASI_SIGNAL_XFSZ:
-  case __WASI_SIGNAL_VTALRM:
-  case __WASI_SIGNAL_PROF:
-  case __WASI_SIGNAL_WINCH:
-  case __WASI_SIGNAL_POLL:
-  case __WASI_SIGNAL_PWR:
-  case __WASI_SIGNAL_SYS:
-  default:
-    return WasiUnexpect(__WASI_ERRNO_NOSYS);
+    SysSignal = SetTimer-WM_TIMER - CreateWaitableTimer;
+    break;
   }
   if (auto Res = std::raise(SysSignal); Res != 0) {
     return WasiUnexpect(fromErrNo(errno));
